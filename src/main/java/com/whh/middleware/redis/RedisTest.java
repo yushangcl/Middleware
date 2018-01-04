@@ -3,6 +3,9 @@ package com.whh.middleware.redis;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisShardInfo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by huahui.wu on 2018/1/3.
  */
@@ -23,6 +26,16 @@ public class RedisTest {
 
         System.out.println("key: TEST  value: " + str);
         // 获取存储的数据并输出
-        System.out.println("redis 存储的字符串为: "+ jedis.get("runoobkey"));
+        System.out.println("redis 存储的字符串为: " + jedis.get("runoobkey"));
+
+
+        //set map
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "java");
+        map.put("2", "redis");
+        jedis.hmset("MAP", map);
+
+        //设置过期时间 单位s
+        jedis.expire("MAP", 10);
     }
 }
