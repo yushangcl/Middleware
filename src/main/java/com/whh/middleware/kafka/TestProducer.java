@@ -6,7 +6,7 @@ import kafka.producer.ProducerConfig;
 
 import java.util.Properties;
 
-public class Sender {
+public class TestProducer {
 
     public static void main(String[] args) {
         for (int i =0; i < 10; i ++ ) {
