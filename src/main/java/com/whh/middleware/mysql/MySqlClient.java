@@ -8,6 +8,11 @@ import java.sql.*;
 public class MySqlClient {
 
     public static void main(String[] args) throws Exception {
+        test();
+
+    }
+
+    public static void test() {
         Connection conn = null;
         String sql;
         // MySQL的JDBC URL编写方式：jdbc:mysql://主机名称：连接端口/数据库的名称?参数=值
@@ -47,8 +52,11 @@ public class MySqlClient {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            conn.close();
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 }
