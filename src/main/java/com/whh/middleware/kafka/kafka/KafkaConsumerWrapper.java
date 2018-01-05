@@ -1,5 +1,7 @@
 package com.whh.middleware.kafka.kafka;
 
+import com.whh.middleware.kafka.MessageListener;
+import com.whh.middleware.kafka.MqConsumer;
 import com.whh.middleware.kafka.event.EventConfig;
 import com.whh.middleware.kafka.event.IdWorker;
 import com.whh.middleware.kafka.event.dao.MsgRecvMapper;

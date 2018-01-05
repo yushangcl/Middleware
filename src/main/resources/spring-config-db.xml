@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- 配置Session工厂 -->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 注入DataSource -->
+        <property name="dataSource" ref="cidruidDataSource"></property>
+        <!-- 声明需要加载的mapper.xml, 该bean被创建之后会自动加载这些文件 -->
+        <property name="mapperLocations" value="classpath:com/whh/middleware/kafka/event/dao/*.xml">
+        </property>
+    </bean>
+
+    <bean id="cidruidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init"
+          destroy-method="close">
+        <property name="driverClassName" value="${ci.jdbc.driverClassName}"/>
+        <property name="url" value="${ci.jdbc.url}"/>
+        <property name="username" value="${ci.jdbc.username}"/>
+        <property name="password" value="${ci.jdbc.password}"/>
+
+        <!--配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="${ci.jdbc.initialSize}"/>
+        <property name="minIdle" value="${ci.jdbc.minIdle}"/>
+        <property name="maxActive" value="${ci.jdbc.maxActive}"/>
+
+        <!--maxWait: 配置获取连接等待超时的时间 6000毫秒/1000等于60秒-->
+        <property name="maxWait" value="${ci.jdbc.maxWait}"/>
+
+        <!--removeAbandoned: 是否自动回收超时连接 可以检测连接泄露-->
+        <!--removeAbandonedTimeout: 超时时间(以秒数为单位)-->
+        <property name="removeAbandoned" value="${ci.jdbc.removeAbandoned}"/>
+        <property name="removeAbandonedTimeout" value="${ci.jdbc.removeAbandonedTimeout}"/>
+        <property name="logAbandoned" value="true" /> <!-- 关闭abanded连接时输出错误日志 -->
+
+
+        <property name="defaultAutoCommit" value="false"/>
+
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000"/>
+
+        <!--  -->
+        <property name="validationQuery" value="SELECT 'x' FROM DUAL"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+
+        <!-- 执行查询与事务的超时设置 -->
+        <property name="queryTimeout" value="${ci.jdbc.queryTimeout}"/>
+        <property name="transactionQueryTimeout" value="${ci.jdbc.transactionQueryTimeout}"/>
+
+        <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+        <property name="poolPreparedStatements" value="${ci.jdbc.poolPreparedStatements}"/>
+        <property name="maxOpenPreparedStatements" value="${ci.jdbc.maxOpenPreparedStatements}"/>
+        <property name="maxPoolPreparedStatementPerConnectionSize"
+                  value="${ci.jdbc.maxPoolPreparedStatementPerConnectionSize}"/>
+
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="${ci.jdbc.filters}"/>
+        <property name="connectionProperties" value="druid.stat.mergeSql=true" />
+        <property name="timeBetweenLogStatsMillis" value="300000"/>
+    </bean>
+
+    <!-- 配置MapperScannerConfigurer -->
+    <bean id="MapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--
+            注入需要扫描的包，它会自动扫描这个包下的接口，
+            然后实现这些接口，并且会实例化这些接口的实现类
+         -->
+        <property name="basePackage" value="com.whh.middleware"></property>
+    </bean>
+
+
+
+</beans>
