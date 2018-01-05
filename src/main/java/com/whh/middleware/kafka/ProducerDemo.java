@@ -7,6 +7,7 @@ import java.util.Properties;
 
 /**
  * kafka 生产者
+ *
  * @author huahui.wu
  */
 public class ProducerDemo {
@@ -40,8 +41,13 @@ public class ProducerDemo {
         //特指 Kafka 处理的消息源（feeds of messages）的不同分类
         String topic = "test";
         for (int i = 0; i < 100; i++) {
+            //Push key value
             producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), Integer.toString(i)));
         }
+        //Push value
+        producer.send(new ProducerRecord<String, String>(topic, "Finish"));
+
+        //关闭连接
         producer.close();
     }
 }

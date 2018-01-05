@@ -1552,7 +1552,7 @@ public class JedisUtil {
 
         Jedis jedis = JedisUtil.getInstance().getJedis();
         for (int i = 0; i < 10; i++) {
-            jedis.set("test", "test");
+            jedis.set("test", "test" + i);
             System.out.println(i + "==" + jedis.get("test"));
 
         }
