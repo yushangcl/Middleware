@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwwarehouse.commons.mq.event.dao.MsgSendMapper">
+  <resultMap id="BaseResultMap" type="com.whh.middleware.kafka.event.model.MsgSend">
+    <id column="msg_send_id" jdbcType="BIGINT" property="msgSendId" />
+    <result column="topic" jdbcType="VARCHAR" property="topic" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="trys" jdbcType="SMALLINT" property="trys" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="sending_time" jdbcType="TIMESTAMP" property="sendingTime" />
+    <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    msg_send_id, topic, `key`, msg, app_id, status, trys, create_time,
+    sending_time, send_time
+  </sql>
+  <insert id="insert" parameterType="com.wwwarehouse.commons.mq.event.model.MsgSend">
+    insert into msg_send (msg_send_id, topic, `key`, msg, app_id, status, trys, create_time)
+    values (#{msgSendId}, #{topic}, #{key}, #{msg}, #{appId}, #{status}, 0, now())
+  </insert>
+  <update id="updateSending">
+    update msg_send
+    set status = #{status}, sending_time = now(), trys = trys + 1
+    where msg_send_id = #{msgSendId} and status = #{preStatus}
+  </update>
+  <update id="updateSend">
+    update msg_send
+    set status = #{status}, send_time = now()
+    where msg_send_id = #{msgSendId}
+  </update>
+  <update id="updateFail">
+    update msg_send
+    set status = #{status}
+    where msg_send_id = #{msgSendId}
+  </update>
+  <delete id="deletePast">
+    delete from msg_send
+    where status = #{status} and TIMESTAMPDIFF(SECOND, send_time, now()) >= #{keepSecond}
+  </delete>
+  <select id="listUnsend" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    <![CDATA[
+    from msg_send
+    where (status = #{status} and (sending_time is null or TIMESTAMPDIFF(SECOND, sending_time, now()) > #{retryInterval}) or status = #{statusSending} and TIMESTAMPDIFF(SECOND, sending_time, now()) > #{sendingExpire}) and trys <= #{trys} order by msg_send_id asc limit #{size}
+    ]]>
+  </select>
+  <select id="countByStatus" resultMap="BaseResultMap">
+    select count(*)
+    from msg_send
+    where status = #{status}
+  </select>
+</mapper>

@@ -1,7 +1,10 @@
 package com.whh.middleware.kafka.kafka;
 
-import com.whh.middleware.kafka.interfaces.MessageListener;
-import com.whh.middleware.kafka.interfaces.MqConsumer;
+import com.whh.middleware.kafka.event.EventConfig;
+import com.whh.middleware.kafka.event.IdWorker;
+import com.whh.middleware.kafka.event.dao.MsgRecvMapper;
+import com.whh.middleware.kafka.event.enums.MsgRecvStatus;
+import com.whh.middleware.kafka.event.model.MsgRecv;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -41,8 +44,8 @@ public class KafkaConsumerWrapper implements MqConsumer, InitializingBean, Dispo
 
     private static AtomicInteger threadId = new AtomicInteger();
 
-//    @Autowired
-//    private MsgRecvMapper msgRecvMapper;
+    @Autowired
+    private MsgRecvMapper msgRecvMapper;
 
     public KafkaConsumerWrapper(KafkaConsumerConfig config, String topics) {
         listeners = new ArrayList<>();
@@ -119,18 +122,18 @@ public class KafkaConsumerWrapper implements MqConsumer, InitializingBean, Dispo
                     } catch (Exception e) {
                         logger.error("处理kafka消息时出错", e);
                     }
-                    //
-//                    if (!p) {
-//                        MsgRecv obj = new MsgRecv();
-//                        obj.setMsgRecvId(IdWorker.getId());
-//                        obj.setTopic(record.topic());
-//                        obj.setKey(record.key());
-//                        obj.setMsg(record.value());
-//                        obj.setAppId(appId);
-//                        obj.setStatus((byte) MsgRecvStatus.Unprocess.ordinal());
-//                        int r = msgRecvMapper.insert(obj);
-//                        EventConfig.incRecvData(r);
-//                    }
+
+                    if (!p) {
+                        MsgRecv obj = new MsgRecv();
+                        obj.setMsgRecvId(IdWorker.getId());
+                        obj.setTopic(record.topic());
+                        obj.setKey(record.key());
+                        obj.setMsg(record.value());
+                        obj.setAppId(appId);
+                        obj.setStatus((byte) MsgRecvStatus.Unprocess.ordinal());
+                        int r = msgRecvMapper.insert(obj);
+                        EventConfig.incRecvData(r);
+                    }
                 }
                 consumer.commitSync();
             } catch (Exception e) {

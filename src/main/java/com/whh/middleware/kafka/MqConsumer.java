@@ -1,4 +1,4 @@
-package com.whh.middleware.kafka.interfaces;
+package com.whh.middleware.kafka;
 
 /**
  * @author huahui.wu

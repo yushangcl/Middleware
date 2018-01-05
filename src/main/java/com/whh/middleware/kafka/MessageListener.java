@@ -1,4 +1,4 @@
-package com.whh.middleware.kafka.interfaces;
+package com.whh.middleware.kafka;
 
 /**
  * @author huahui.wu
@@ -28,5 +28,5 @@ public abstract class MessageListener {
         consumer.addListener(this);
     }
 
-    public void onMessage(String topic, String key, String value) throws Exception {}
+    public abstract void onMessage(String topic, String key, String value) throws Exception;
 }

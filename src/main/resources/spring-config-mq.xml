@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+    <bean id="producerConfig" class="com.whh.middleware.kafka.kafka.KafkaProducerConfig">
+        <property name="servers" value="${mq.serverAddress}"/>
+        <property name="clientId" value="commonindustryBiz" />
+        <property name="acks" value="all"/>
+    </bean>
+    <bean id="producerWrapper" class="com.whh.middleware.kafka.kafka.KafkaProducerWrapper">
+        <constructor-arg ref="producerConfig"/>
+    </bean>
+
+
+    <!-- 消费者配置-->
+    <bean id="kafkaConsumerConfig" class="com.whh.middleware.kafka.kafka.KafkaConsumerConfig">
+        <property name="servers" value="${mq.serverAddress}" />
+        <property name="groupId" value="commonindustryGroup_1" />
+        <property name="enableAutoCommit" value="false"/>
+        <property name="sessionTimeoutIntervalMs" value="120000"/> <!-- 根据数据库的超时时间来定。 -->
+        <property name="requestTimeoutIntervalMs" value="160000"/> <!-- 数值要比sessionTimeoutIntervalMs大。 -->
+    </bean>
+
+    <!-- 生产者配置-->
+    <bean id="eventProcess" class="com.whh.middleware.kafka.event.EventSendProcess"/>
+    <bean id="eventProducer" class="com.whh.middleware.kafka.event.EventProducer"/>
+
+    <!-- 消费者配置-->
+    <bean id="eventConsumer" class="com.whh.middleware.kafka.event.EventConsumer" />
+
+
+    <bean id="consumerWrapper" class="com.whh.middleware.kafka.kafka.KafkaConsumerWrapper">
+        <constructor-arg ref="kafkaConsumerConfig" />
+        <constructor-arg value="INITIALIZATION_SHOP_AFFAIR,CREATE_STOCK_OPERATION_END,CREATE_DATA_CODE_END,BUSINESS_UNIT_CREATE_COMPLETION" />
+    </bean>
+
+
+    <bean id="initializationShopAffairConsumer" class="com.whh.middleware.kafka.demo.KafkaTestConsumer" init-method="init">
+        <property name="topic" value="INITIALIZATION_SHOP_AFFAIR" />
+        <property name="consumer" ref="eventConsumer" />
+    </bean>
+
+
+</beans>

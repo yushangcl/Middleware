@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwwarehouse.commons.mq.event.dao.MsgRecvMapper">
+  <resultMap id="BaseResultMap" type="com.whh.middleware.kafka.event.model.MsgRecv">
+    <id column="msg_recv_id" jdbcType="BIGINT" property="msgRecvId" />
+    <result column="topic" jdbcType="VARCHAR" property="topic" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="trys" jdbcType="SMALLINT" property="trys" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="processing_time" jdbcType="TIMESTAMP" property="processingTime" />
+    <result column="processed_time" jdbcType="TIMESTAMP" property="processTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    msg_recv_id, topic, `key`, msg, app_id, status, trys, create_time,
+    processing_time, processed_time
+  </sql>
+  <insert id="insert" parameterType="com.wwwarehouse.commons.mq.event.model.MsgRecv">
+    insert into msg_recv (msg_recv_id, topic, `key`, msg, app_id, status, trys, create_time)
+    values (#{msgRecvId}, #{topic}, #{key}, #{msg}, #{appId}, #{status}, 0, now())
+  </insert>
+  <update id="updateProcessing">
+    update msg_recv
+    set status = #{status}, processing_time = now(), trys = trys + 1
+    where msg_recv_id = #{msgRecvId} and status = #{preStatus}
+  </update>
+  <update id="updateProcessed">
+    update msg_recv
+    set status = #{status}, processed_time = now()
+    where msg_recv_id = #{msgRecvId}
+  </update>
+  <update id="updateFail">
+    update msg_recv
+    set status = #{status}
+    where msg_recv_id = #{msgRecvId}
+  </update>
+  <delete id="deletePast">
+    delete from msg_recv
+    where status = #{status} and TIMESTAMPDIFF(SECOND, processed_time, now()) >= #{keepSecond}
+  </delete>
+  <select id="listUnprocess" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    <![CDATA[
+      from msg_recv
+      where (status = #{status} and (processing_time is null or TIMESTAMPDIFF(SECOND, processing_time, now()) >= #{retryInterval}) or status = #{statusProcessing} and TIMESTAMPDIFF(SECOND, processing_time, now()) > #{processingExpire}) and trys <= #{trys} order by msg_recv_id asc limit #{size}
+    ]]>
+  </select>
+</mapper>

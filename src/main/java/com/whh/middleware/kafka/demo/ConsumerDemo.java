@@ -1,4 +1,4 @@
-package com.whh.middleware.kafka;
+package com.whh.middleware.kafka.demo;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

@@ -1,7 +1,6 @@
 package com.whh.middleware.kafka.kafka;
 
 import com.alibaba.fastjson.JSONObject;
-import com.whh.middleware.kafka.interfaces.MqProducer;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;

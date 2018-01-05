@@ -14,7 +14,7 @@ import java.util.Set;
 //import org.apache.log4j.Logger;
 
 /**
- * @author Mr.hu
+ * @author huahui.wu
  * @version crateTime：2013-10-30 下午5:41:30
  *          Class Explain:JedisUtil
  */
@@ -784,8 +784,9 @@ public class JedisUtil {
             Jedis sjedis = getJedis();
             Double score = sjedis.zscore(key, memebr);
             returnJedis(sjedis);
-            if (score != null)
+            if (score != null) {
                 return score;
+            }
             return 0;
         }
     }
@@ -922,7 +923,7 @@ public class JedisUtil {
          *
          * @param key
          * @param fieid 存储位置
-         * @param long  value 要增加的值,可以是负数
+         * @param value 要增加的值,可以是负数
          * @return 增加指定数字后，存储位置的值
          */
         public long hincrby(String key, String fieid, long value) {
@@ -1466,7 +1467,7 @@ public class JedisUtil {
          * @return List
          */
         public List<String> lrange(String key, long start, long end) {
-            //ShardedJedis sjedis = getShardedJedis();
+//            ShardedJedis sjedis = getShardedJedis();
             Jedis sjedis = getJedis();
             List<String> list = sjedis.lrange(key, start, end);
             returnJedis(sjedis);

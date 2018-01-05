@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+    <!-- redis connection definition -->
+    <!--<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"-->
+    <!--p:hostName="${redis.servers}" p:port="6379" />-->
+
+    <!-- redis cluster connection definition -->
+    <bean id="redisNode1"   class="org.springframework.data.redis.connection.RedisNode">
+        <constructor-arg value="${redis.cluster1.hostname}" />
+        <constructor-arg value="${redis.cluster1.port}" type="int" />
+    </bean>
+    <!--<bean id="redisNode2"   class="org.springframework.data.redis.connection.RedisNode">-->
+        <!--<constructor-arg value="${redis.cluster2.hostname}" />-->
+        <!--<constructor-arg value="${redis.cluster2.port}" type="int" />-->
+    <!--</bean>-->
+    <!--<bean id="redisNode3"   class="org.springframework.data.redis.connection.RedisNode">-->
+        <!--<constructor-arg value="${redis.cluster3.hostname}" />-->
+        <!--<constructor-arg value="${redis.cluster3.port}" type="int" />-->
+    <!--</bean>-->
+    <!--<bean id="redisNode4"   class="org.springframework.data.redis.connection.RedisNode">-->
+        <!--<constructor-arg value="${redis.cluster4.hostname}" />-->
+        <!--<constructor-arg value="${redis.cluster4.port}" type="int" />-->
+    <!--</bean>-->
+    <!--<bean id="redisNode5"   class="org.springframework.data.redis.connection.RedisNode">-->
+        <!--<constructor-arg value="${redis.cluster5.hostname}" />-->
+        <!--<constructor-arg value="${redis.cluster5.port}" type="int" />-->
+    <!--</bean>-->
+    <!--<bean id="redisNode6"   class="org.springframework.data.redis.connection.RedisNode">-->
+        <!--<constructor-arg value="${redis.cluster6.hostname}" />-->
+        <!--<constructor-arg value="${redis.cluster6.port}" type="int" />-->
+    <!--</bean>-->
+    <bean id="clusterConfiguration" class="org.springframework.data.redis.connection.RedisClusterConfiguration">
+        <property name="clusterNodes">
+            <set>
+                <ref bean="redisNode1" />
+                <!--<ref bean="redisNode2" />-->
+                <!--<ref bean="redisNode3" />-->
+                <!--<ref bean="redisNode4" />-->
+                <!--<ref bean="redisNode5" />-->
+                <!--<ref bean="redisNode6" />-->
+            </set>
+        </property>
+    </bean>
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <constructor-arg ref="clusterConfiguration" />
+    </bean>
+    <!-- redis template definition -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connectionFactory-ref="connectionFactory">
+        <property name="keySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="hashKeySerializer">
+            <bean class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+    </bean>
+</beans>
