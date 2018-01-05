@@ -1,6 +1,7 @@
 package com.whh.middleware.kafka;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
@@ -36,18 +37,22 @@ public class ProducerDemo {
         //value序列化类方式
         props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-        org.apache.kafka.clients.producer.Producer<String, String> producer = new KafkaProducer<>(props);
+        Producer<String, String> producer = new KafkaProducer<>(props);
 
         //特指 Kafka 处理的消息源（feeds of messages）的不同分类
         String topic = "test";
-        for (int i = 0; i < 100; i++) {
-            //Push key value
-            producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), Integer.toString(i)));
-        }
-        //Push value
-        producer.send(new ProducerRecord<String, String>(topic, "Finish"));
-
-        //关闭连接
+//        for (int i = 0; i < 100; i++) {
+//            //Push key value
+//            producer.send(new ProducerRecord<String, String>(topic, Integer.toString(i), Integer.toString(i)));
+//        }
+//        //Push value
+//        producer.send(new ProducerRecord<String, String>(topic, "Finish"));
         producer.close();
+
+        //另外一种方式
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
+        kafkaProducer.send(new ProducerRecord<String, String>(topic, "Test-Key","Test-value"));
+        //关闭连接
+        kafkaProducer.close();
     }
 }
