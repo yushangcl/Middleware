@@ -33,7 +33,7 @@ public class MySqlClient {
             System.out.println("成功加载MySQL驱动程序");
             // 一个Connection代表一个数据库连接
             Long start = System.currentTimeMillis();
-            conn = DriverManager.getConnection(url, "user","123456789..++");
+            conn = DriverManager.getConnection(url, "user", "123456789..++");
             // Statement里面带有很多方法，比如executeUpdate可以实现插入，更新和删除等
             Long mid = System.currentTimeMillis();
             System.out.println("连接数据库耗时：" + (mid - start) + "ms");
